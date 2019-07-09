@@ -143,11 +143,21 @@ uint32_t Currency::upgradeHeight(uint8_t majorVersion) const {
 }
 
 bool Currency::getBlockReward(uint8_t blockMajorVersion, size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins,
-  uint64_t fee, uint64_t& reward, int64_t& emissionChange) const {
+  uint64_t fee, const uint64_t blockHeight, uint64_t& reward, int64_t& emissionChange) const {
   assert(alreadyGeneratedCoins <= m_moneySupply);
   assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
 
-  uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
+  uint32_t emission;
+  if (blockHeight >= CryptoNote::parameters::EMISSION_SPEED_FACTOR_V2_HEIGHT)
+  {
+      emission = CryptoNote::parameters::EMISSION_SPEED_FACTOR_V2;
+  }
+  else
+  {
+      emission = CryptoNote::parameters::EMISSION_SPEED_FACTOR;
+  }
+  
+  uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> emission;
   if (alreadyGeneratedCoins == 0 && CryptoNote::parameters::GENESIS_BLOCK_REWARD != 0) {
     baseReward = CryptoNote::parameters::GENESIS_BLOCK_REWARD;
   }
@@ -196,7 +206,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
 
   uint64_t blockReward;
   int64_t emissionChange;
-  if (!getBlockReward(blockMajorVersion, medianSize, currentBlockSize, alreadyGeneratedCoins, fee, blockReward, emissionChange)) {
+  if (!getBlockReward(blockMajorVersion, medianSize, currentBlockSize, alreadyGeneratedCoins, fee, height, blockReward, emissionChange)) {
     logger(INFO) << "Block is too big";
     return false;
   }

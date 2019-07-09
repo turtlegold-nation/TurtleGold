@@ -163,7 +163,7 @@ int64_t getEmissionChange(const Currency& currency, IBlockchainCache& segment, u
   auto lastBlocksSizes = segment.getLastBlocksSizes(currency.rewardBlocksWindow(), previousBlockIndex, addGenesisBlock);
   auto blocksSizeMedian = Common::medianValue(lastBlocksSizes);
   if (!currency.getBlockReward(cachedBlock.getBlock().majorVersion, blocksSizeMedian,
-                               cumulativeSize, alreadyGeneratedCoins, cumulativeFee, reward, emissionChange)) {
+                               cumulativeSize, alreadyGeneratedCoins, cumulativeFee, previousBlockIndex+1, reward, emissionChange)) {
     throw std::system_error(make_error_code(error::BlockValidationError::CUMULATIVE_BLOCK_SIZE_TOO_BIG));
   }
 
@@ -2651,13 +2651,13 @@ BlockDetails Core::getBlockDetails(const Crypto::Hash& blockHash) const {
   }
 
   int64_t emissionChange = 0;
-  bool result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, 0, prevBlockGeneratedCoins, 0, blockDetails.baseReward, emissionChange);
+  bool result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, 0, prevBlockGeneratedCoins, 0, blockIndex, blockDetails.baseReward, emissionChange);
   if (result) {}
   assert(result);
 
   uint64_t currentReward = 0;
   result = currency.getBlockReward(blockDetails.majorVersion, blockDetails.sizeMedian, blockDetails.transactionsCumulativeSize,
-                                   prevBlockGeneratedCoins, 0, currentReward, emissionChange);
+                                   prevBlockGeneratedCoins, 0, blockIndex, currentReward, emissionChange);
   assert(result);
 
   if (blockDetails.baseReward == 0 && currentReward == 0) {
