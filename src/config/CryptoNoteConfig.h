@@ -3,6 +3,10 @@
 // Copyright (c) 2018-2019, The TurtleCoin Developers
 // Copyright (c) 2018-2019, The DeroGold Association
 // Copyright (c) 2019-2019, The TurtleGold Developers
+// Copyright (c) 2019-2019, The BitcoinMono Developers
+// Copyright (c) 2018-2019, The Aeon Classic Developers
+// Copyright (c) 2018-2019, The WrkzCoin developers
+//
 // Please see the included LICENSE file for more information.
 
 #pragma once
@@ -13,54 +17,64 @@
 #include <limits>
 #include <initializer_list>
 #include <boost/uuid/uuid.hpp>
+#include <crypto/hash.h>
 
 namespace CryptoNote {
 namespace parameters {
 
-const uint64_t DIFFICULTY_TARGET                             = 25; // seconds
-const uint64_t DIFFICULTY_TARGET_V2                          = 25; // seconds
-  
-/* Height to swap to DIFFICULTY_TARGET_V2 */
-const uint64_t DIFFICULTY_TARGET_V2_HEIGHT                   = 270000; // Date of fork is Sunday, June 23, 2019
+const uint64_t DIFFICULTY_TARGET                             = 25; // recommended : 60 --> 90 seconds
 
 const uint32_t CRYPTONOTE_MAX_BLOCK_NUMBER                   = 500000000;
 const size_t   CRYPTONOTE_MAX_BLOCK_BLOB_SIZE                = 500000000;
 const size_t   CRYPTONOTE_MAX_TX_SIZE                        = 1000000000;
 const uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX       = 0x3b9f;
-const uint32_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW          = 120;
+const uint32_t CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW          = 120; // recommended : 20
 const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 6 * DIFFICULTY_TARGET;
+const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V3         = 6 * DIFFICULTY_TARGET;
+const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4         = 6 * DIFFICULTY_TARGET;
 
 const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW             = 11;
+const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V3          = 11;
 
 // MONEY_SUPPLY - total number coins to be generated
 const uint64_t MONEY_SUPPLY                                  = UINT64_C(10000000000000000);
+const uint32_t ZAWY_DIFFICULTY_BLOCK_INDEX                   = 0;
+const size_t   ZAWY_DIFFICULTY_V2                            = 0;
+const uint8_t  ZAWY_DIFFICULTY_DIFFICULTY_BLOCK_VERSION      = 1;
 
-const uint32_t EMISSION_SPEED_FACTOR                         = 23;
-const uint32_t EMISSION_SPEED_FACTOR_V2                      = 24;
+const uint64_t LWMA_2_DIFFICULTY_BLOCK_INDEX                 = 0;
+const uint64_t LWMA_2_DIFFICULTY_BLOCK_INDEX_V2              = 0;
+const uint64_t LWMA_2_DIFFICULTY_BLOCK_INDEX_V3              = 0;
 
-  
-static_assert(EMISSION_SPEED_FACTOR    <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
-static_assert(EMISSION_SPEED_FACTOR_V2 <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
-
- 
 /* Height to swap to EMISSION_SPEED_FACTOR_V2 */
 const uint64_t EMISSION_SPEED_FACTOR_V2_HEIGHT               = 270000; // Date of fork is Sunday, June 23, 2019
-
+const unsigned EMISSION_SPEED_FACTOR                         = 23;
+const unsigned EMISSION_SPEED_FACTOR_V2                      = 24;
+static_assert(EMISSION_SPEED_FACTOR <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
+static_assert(EMISSION_SPEED_FACTOR_V2 <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR_V2");
 
 /* Premine amount */
 const uint64_t GENESIS_BLOCK_REWARD                          = UINT64_C(0);
 
 /* How to generate a premine:
+
 * Compile your code
+
 * Run zedwallet, ignore that it can't connect to the daemon, and generate an
   address. Save this and the keys somewhere safe.
+
 * Launch the daemon with these arguments:
 --print-genesis-tx --genesis-block-reward-address <premine wallet address>
+
 For example:
-TurtleGoldd --print-genesis-tx --genesis-block-reward-address 
+TurtleCoind --print-genesis-tx --genesis-block-reward-address TRTLv2Fyavy8CXG8BPEbNeCHFZ1fuDCYCZ3vW5H5LXN4K2M2MHUpTENip9bbavpHvvPwb4NDkBWrNgURAd5DB38FHXWZyoBh4wW
+
 * Take the hash printed, and replace it with the hash below in GENESIS_COINBASE_TX_HEX
+
 * Recompile, setup your seed nodes, and start mining
+
 * You should see your premine appear in the previously generated wallet.
+
 */
 const char     GENESIS_COINBASE_TX_HEX[]                     = "017801ff00010002a40e83f44198285b3036a7ccef7ff155375b34c7cc8552ceea8721aefa8229752101aaad54aade16d9a4542e0efb3fdf32d86daadc16f1c07f1e363dd0e152a81def";
 static_assert(sizeof(GENESIS_COINBASE_TX_HEX)/sizeof(*GENESIS_COINBASE_TX_HEX) != 1, "GENESIS_COINBASE_TX_HEX must not be empty.");
@@ -79,34 +93,69 @@ const size_t   CRYPTONOTE_COINBASE_BLOB_RESERVED_SIZE        = 600;
 
 const size_t   CRYPTONOTE_DISPLAY_DECIMAL_POINT              = 2;
 
-const uint64_t MINIMUM_FEE                                   = UINT64_C(10);
+const uint64_t MINIMUM_FEE                                   = UINT64_C(10); // 1
 
 /* This section defines our minimum and maximum mixin counts required for transactions */
-const uint64_t MINIMUM_MIXIN_V0                              = 0;
-const uint64_t MAXIMUM_MIXIN_V0                              = 7;
+const uint64_t MINIMUM_MIXIN_V1                              = 0;
+const uint64_t MAXIMUM_MIXIN_V1                              = 7; // recommeneded : 1
+
+const uint64_t MINIMUM_MIXIN_V2                              = 0; //
+const uint64_t MAXIMUM_MIXIN_V2                              = 1; // recommeneded : 1
+
+const uint64_t MINIMUM_MIXIN_V3                              = 0; //
+const uint64_t MAXIMUM_MIXIN_V3                              = 1; // recommeneded : 1
+
+/* The heights to activate the mixin limits at */
+const uint32_t MIXIN_LIMITS_V1_HEIGHT                        = 0;
+const uint32_t MIXIN_LIMITS_V2_HEIGHT                        = 1000000; // unused
+const uint32_t MIXIN_LIMITS_V3_HEIGHT                        = 1000000; // unused
 
 /* The mixin to use by default with zedwallet and turtle-service */
-const uint64_t DEFAULT_MIXIN_V0                              = 3;
+/* DEFAULT_MIXIN_V0 is the mixin used before MIXIN_LIMITS_V1_HEIGHT is started */
+const uint64_t DEFAULT_MIXIN_V0                              = 0;
+const uint64_t DEFAULT_MIXIN_V1                              = 0;
+const uint64_t DEFAULT_MIXIN_V2                              = 1; //
+const uint64_t DEFAULT_MIXIN_V3                              = 1; // unused
 
 const uint64_t DEFAULT_DUST_THRESHOLD                        = UINT64_C(0);
+const uint64_t DEFAULT_DUST_THRESHOLD_V2                     = DEFAULT_DUST_THRESHOLD; // unused
 
+const uint32_t DUST_THRESHOLD_V2_HEIGHT                      = 0; // unused
+const uint32_t FUSION_DUST_THRESHOLD_HEIGHT_V2               = 0; // unused
 const uint64_t EXPECTED_NUMBER_OF_BLOCKS_PER_DAY             = 24 * 60 * 60 / DIFFICULTY_TARGET;
 
-const uint64_t DIFFICULTY_WINDOW                             = 60;
+const size_t   DIFFICULTY_WINDOW                             = 60;
+const size_t   DIFFICULTY_WINDOW_V1                          = 60;
+const size_t   DIFFICULTY_WINDOW_V2                          = 60;
+const uint64_t DIFFICULTY_WINDOW_V3                          = 60;
 const uint64_t DIFFICULTY_BLOCKS_COUNT                       = DIFFICULTY_WINDOW + 1;
+const uint64_t DIFFICULTY_BLOCKS_COUNT_V3                    = DIFFICULTY_WINDOW_V3 + 1;
+
+const size_t   DIFFICULTY_CUT                                = 60;  // timestamps to cut after sorting
+const size_t   DIFFICULTY_CUT_V1                             = 60;
+const size_t   DIFFICULTY_CUT_V2                             = 60;
+const size_t   DIFFICULTY_LAG                                = 0;  // !!!
+const size_t   DIFFICULTY_LAG_V1                             = 0;
+const size_t   DIFFICULTY_LAG_V2                             = 0;
+// static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Bad DIFFICULTY_WINDOW or DIFFICULTY_CUT");
 
 const size_t   MAX_BLOCK_SIZE_INITIAL                        = 100000;
 const uint64_t MAX_BLOCK_SIZE_GROWTH_SPEED_NUMERATOR         = 100 * 1024;
 const uint64_t MAX_BLOCK_SIZE_GROWTH_SPEED_DENOMINATOR       = 365 * 24 * 60 * 60 / DIFFICULTY_TARGET;
-const uint64_t MAX_EXTRA_SIZE                                = 800000;
-const uint64_t MAX_EXTRA_SIZE_V1_HEIGHT                      = 270000;
-const uint64_t MAX_EXTRA_SIZE_V2                             = 1024;
-const uint64_t MAX_EXTRA_SIZE_V2_HEIGHT                      = 700000;
+const uint64_t MAX_EXTRA_SIZE                                = 1024;
+const uint64_t MAX_EXTRA_SIZE_V2                             = 512;
+const uint64_t MAX_EXTRA_SIZE_V2_HEIGHT                      = 1000000; // recommended : 0
 
-/* For new projects forked from this code base, this value should be
-   changed to 0 to prevent a possible transaction bloat exploit */
+/* For new projects forked from this code base, the values immediately below
+   should be changed to 0 to prevent issues with transaction processing 
+   and other possible unexpected behavior */
 const uint64_t TRANSACTION_SIGNATURE_COUNT_VALIDATION_HEIGHT = 0;
+const uint64_t BLOCK_BLOB_SHUFFLE_CHECK_HEIGHT               = 0;
+const uint64_t TRANSACTION_INPUT_BLOCKTIME_VALIDATION_HEIGHT = 0;
 
+/* This describes how many blocks of "wiggle" room transactions have regarding
+   when the outputs can be spent based on a reasonable belief that the outputs
+   would unlock in the current block period */
 const uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS     = 1;
 const uint64_t CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS    = DIFFICULTY_TARGET * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS;
 
@@ -120,8 +169,8 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 2;
-const uint32_t UPGRADE_HEIGHT_V4                             = 3;
-const uint32_t UPGRADE_HEIGHT_V5                             = 4;
+const uint32_t UPGRADE_HEIGHT_V4                             = 3; // Upgrade height for CN-Lite Variant 1 switch.
+const uint32_t UPGRADE_HEIGHT_V5                             = 4; // Upgrade height for CN-Turtle Variant 2 switch.
 const uint32_t UPGRADE_HEIGHT_CURRENT                        = UPGRADE_HEIGHT_V5;
 
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;               // percent
@@ -143,7 +192,8 @@ const uint64_t FORK_HEIGHTS_SIZE = sizeof(FORK_HEIGHTS) / sizeof(*FORK_HEIGHTS);
 
 /* The index in the FORK_HEIGHTS array that this version of the software will
    support. For example, if CURRENT_FORK_INDEX is 3, this version of the
-   software will support the fork at block height 270,000.
+   software will support the fork at 600,000 blocks.
+
    This will default to zero if the FORK_HEIGHTS array is empty, so you don't
    need to change it manually. */
 const uint8_t CURRENT_FORK_INDEX = FORK_HEIGHTS_SIZE == 0 ? 0 : SOFTWARE_SUPPORTED_FORK_INDEX;
@@ -174,6 +224,18 @@ const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
+const std::unordered_map<
+    uint8_t,
+    std::function<void(const void *data, size_t length, Crypto::Hash &hash)>
+> HASHING_ALGORITHMS_BY_BLOCK_VERSION =
+{
+    { BLOCK_MAJOR_VERSION_1, Crypto::cn_slow_hash_v0 },             /* From zero */
+    { BLOCK_MAJOR_VERSION_2, Crypto::cn_slow_hash_v0 },             /* UPGRADE_HEIGHT_V2 */
+    { BLOCK_MAJOR_VERSION_3, Crypto::cn_slow_hash_v0 },             /* UPGRADE_HEIGHT_V3 */
+    { BLOCK_MAJOR_VERSION_4, Crypto::cn_lite_slow_hash_v1 },        /* UPGRADE_HEIGHT_V4 */
+    { BLOCK_MAJOR_VERSION_5, Crypto::cn_turtle_lite_slow_hash_v2 }  /* UPGRADE_HEIGHT_V5 */
+};
+
 const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by default, blocks ids count in synchronizing
 const uint64_t BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  100;    //by default, blocks count in blocks downloading
 const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
@@ -198,7 +260,7 @@ const uint8_t P2P_LITE_BLOCKS_PROPOGATION_VERSION            = 0;
 const uint8_t  P2P_UPGRADE_WINDOW                            = 2;
 
 const size_t   P2P_CONNECTION_MAX_WRITE_BUFFER_SIZE          = 32 * 1024 * 1024; // 32 MB
-const uint32_t P2P_DEFAULT_CONNECTIONS_COUNT                 = 8;
+const uint32_t P2P_DEFAULT_CONNECTIONS_COUNT                 = 32;
 const size_t   P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT     = 70;
 const uint32_t P2P_DEFAULT_HANDSHAKE_INTERVAL                = 60;            // seconds
 const uint32_t P2P_DEFAULT_PACKET_MAX_SIZE                   = 50000000;      // 50000000 bytes maximum packet size
@@ -209,10 +271,10 @@ const uint64_t P2P_DEFAULT_INVOKE_TIMEOUT                    = 60 * 2 * 1000; //
 const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          // 5 seconds
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
-const uint64_t DATABASE_WRITE_BUFFER_MB_DEFAULT_SIZE         = 256;
-const uint64_t DATABASE_READ_BUFFER_MB_DEFAULT_SIZE          = 10;
-const uint32_t DATABASE_DEFAULT_MAX_OPEN_FILES               = 100;
-const uint16_t DATABASE_DEFAULT_BACKGROUND_THREADS_COUNT     = 2;
+const uint64_t DATABASE_WRITE_BUFFER_MB_DEFAULT_SIZE         = 512; // 1 GB	
+const uint64_t DATABASE_READ_BUFFER_MB_DEFAULT_SIZE          = 128; // 128 MB
+const uint32_t DATABASE_DEFAULT_MAX_OPEN_FILES               = 500; // 500 files
+const uint16_t DATABASE_DEFAULT_BACKGROUND_THREADS_COUNT     = 4; // 5 DB threads
 
 const char     LATEST_VERSION_URL[]                          = "https://github.com/turtlegold/TurtleGold/releases";
 const std::string LICENSE_URL                                = "https://github.com/turtlegold/TurtleGold/blob/master/LICENSE";
