@@ -22,7 +22,7 @@
 namespace CryptoNote {
 namespace parameters {
 
-const uint64_t DIFFICULTY_TARGET                             = 25; // recommended : 60 --> 90 seconds
+const uint64_t DIFFICULTY_TARGET                             = 30; // recommended : 80 or 60 --> 90 seconds
 
 const uint32_t CRYPTONOTE_MAX_BLOCK_NUMBER                   = 500000000;
 const size_t   CRYPTONOTE_MAX_BLOCK_BLOB_SIZE                = 500000000;
@@ -47,14 +47,14 @@ const uint64_t LWMA_2_DIFFICULTY_BLOCK_INDEX_V2              = 0;
 const uint64_t LWMA_2_DIFFICULTY_BLOCK_INDEX_V3              = 0;
 
 /* Height to swap to EMISSION_SPEED_FACTOR_V2 */
-const uint64_t EMISSION_SPEED_FACTOR_V2_HEIGHT               = 270000; // Date of fork is Sunday, June 23, 2019
-const unsigned EMISSION_SPEED_FACTOR                         = 23;
+const uint64_t EMISSION_SPEED_FACTOR_V2_HEIGHT               = 1000000; // Date of fork is Sunday, June 23, 2019
+const unsigned EMISSION_SPEED_FACTOR                         = 24;
 const unsigned EMISSION_SPEED_FACTOR_V2                      = 24;
 static_assert(EMISSION_SPEED_FACTOR <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
 static_assert(EMISSION_SPEED_FACTOR_V2 <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR_V2");
 
 /* Premine amount */
-const uint64_t GENESIS_BLOCK_REWARD                          = UINT64_C(0);
+const uint64_t GENESIS_BLOCK_REWARD                          = UINT64_C(360000000000000);
 
 /* How to generate a premine:
 
@@ -76,7 +76,7 @@ TurtleCoind --print-genesis-tx --genesis-block-reward-address TRTLv2Fyavy8CXG8BP
 * You should see your premine appear in the previously generated wallet.
 
 */
-const char     GENESIS_COINBASE_TX_HEX[]                     = "017801ff00010002a40e83f44198285b3036a7ccef7ff155375b34c7cc8552ceea8721aefa8229752101aaad54aade16d9a4542e0efb3fdf32d86daadc16f1c07f1e363dd0e152a81def";
+const char GENESIS_COINBASE_TX_HEX[] = "017801ff00018080fac0b0ed510212ed4e7b251614d5835cd231274fc9a50cc4989e293b0b8bb013c78e1c4dd3ff2101aaaea285eddee0c4765d2f890b9c903a7bd08403cbc2e63a1a8eab74a1170148";
 static_assert(sizeof(GENESIS_COINBASE_TX_HEX)/sizeof(*GENESIS_COINBASE_TX_HEX) != 1, "GENESIS_COINBASE_TX_HEX must not be empty.");
 
 /* This is the unix timestamp of the first "mined" block (technically block 2, not the genesis block)
@@ -240,8 +240,8 @@ const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by def
 const uint64_t BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  100;    //by default, blocks count in blocks downloading
 const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
 
-const int      P2P_DEFAULT_PORT                              =  42068;
-const int      RPC_DEFAULT_PORT                              =  42061;
+const int      P2P_DEFAULT_PORT                              =  42058;
+const int      RPC_DEFAULT_PORT                              =  42051;
 const int      SERVICE_DEFAULT_PORT                          =  1337;
 
 const size_t   P2P_LOCAL_WHITE_PEERLIST_LIMIT                =  1000;
@@ -280,11 +280,11 @@ const char     LATEST_VERSION_URL[]                          = "https://github.c
 const std::string LICENSE_URL                                = "https://github.com/turtlegold/TurtleGold/blob/master/LICENSE";
 const static   boost::uuids::uuid CRYPTONOTE_NETWORK         =
 {
-    {  0xb5, 0x0c, 0x4a, 0x6c, 0xcf, 0x52, 0x57, 0x41, 0x65, 0xf9, 0x91, 0xa4, 0xb6, 0xc1, 0x43, 0xe9  }
+    {  0xc5, 0x0d, 0x5a, 0x2c, 0x57, 0x62, 0xcf, 0x58, 0xf9, 0x95, 0x91, 0xa4, 0xb6, 0xc1, 0x43, 0xe9  }
 };
 
 const char* const SEED_NODES[] = {
-    "94.211.137.5:42068", //MunchieHigh420 
-    "95.217.37.172:42068" //AlpHA
+    "94.211.137.5:42058", //MunchieHigh420 
+    "95.217.37.172:42058" //AlpHA
 };
 } // CryptoNote
